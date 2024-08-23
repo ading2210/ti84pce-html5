@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>TI-84 Plus CE Emulator</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/png" href="calc.png"/>
+    <link rel="stylesheet" type="text/css" href="https://mn.testnav.com/client/public/stylesheets/tn.css"/>
+    <style>
+      body {
+        padding: 0px !important;
+      }
+    </style>
+
+    <script src="https://mn.testnav.com/client/texasinstruments/js/ELG-min.js"></script>
+    <!-- these tags would contain inlined data files in the html bundle-->
+    <script id="h84statej" type="application/json" data-url="https://mn.testnav.com/client/texasinstruments/bin/No_AppsCE.h84statej"></script>
+    <script id="ti84faceplate" type="application/json" data-url="https://mn.testnav.com/client/texasinstruments/images/TI84CE_touch.svg"></script>
+  </head>
+  <body>
+    <div id="calculatorDiv"></div>
+    <script>
+      const from_id = (id) => document.getElementById(id);
+      const h84statej = from_id("h84statej");
+      const ti84faceplate = from_id("ti84faceplate");
+
+      //proxy the xmlhttprequest open to remove the hash from the url
+      XMLHttpRequest.prototype.open = new Proxy(XMLHttpRequest.prototype.open, {
+        apply: function (target, thisArg, args) {
+          if (typeof args[1] === "string"){
+            args[1] = args[1].replace(/#.*$/, "");
+          }
+          Reflect.apply(target, thisArg, args);
+        },
+      })
+
+      function create_blob(string) {
+        if (!string) return null;
+        let blob = new Blob([JSON.parse(string)]);
+        return URL.createObjectURL(blob);
+      }
+
+      async function main() {
+        let default_rom = h84statej.getAttribute("data-url");
+        let default_faceplate = ti84faceplate.getAttribute("data-url");
+
+        let rom_url = create_blob(h84statej.innerHTML) || default_rom;
+        let faceplate_url = create_blob(ti84faceplate.innerHTML) || default_faceplate;
+        
+        rom_url += "#.h84statej";
+        faceplate_url += "#.svg";
+        let ti84 = new TI84PCE({ROMLocation: rom_url, FaceplateLocation: faceplate_url});
+      }
+
+      main();
+    </script>
+  </body>
+</html>
