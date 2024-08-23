@@ -17,6 +17,8 @@ jobs:
           source .venv/bin/activate
           pip install -r requirements.txt
           python3 inline.py
+          mkdir -p dist
+          cp *.html *.png dist
 
       - name: Publish to Cloudflare Pages
         uses: cloudflare/pages-action@v1
@@ -24,3 +26,4 @@ jobs:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: b8079ffa92c97010f2a8d759e24cc782
           projectName: ti84
+          directory: dist
