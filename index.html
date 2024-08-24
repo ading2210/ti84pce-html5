@@ -2,12 +2,22 @@
 <html>
   <head>
     <title>TI-84 Plus CE Emulator</title>
+    <meta name="description" content="This is a standalone version of the official TI-84 Plus CE HTML5 emulator from Texas Instruments.">
+    <meta property="og:title" content="TI-84 Plus CE Emulator">
+    <meta property="og:url" content="https://ti84.pages.dev/">
+    <meta property="og:description" content="This is a standalone version of the official TI-84 Plus CE HTML5 emulator from Texas Instruments.">
+    <meta property="og:image" content="https://ti84.pages.dev/calc.png">
+    <meta property="og:type" content="website">
+    <meta name="theme-color" content="#ffffff">
+
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="icon" type="image/png" href="calc.png"/>
     <link rel="stylesheet" type="text/css" href="https://mn.testnav.com/client/public/stylesheets/tn.css"/>
     <style>
       body {
         padding: 0px !important;
+        display: flex !important;
+        flex-direction: column;
       }
     </style>
 
@@ -18,10 +28,14 @@
   </head>
   <body>
     <div id="calculatorDiv"></div>
+    <a id="popup_button" href="javascript: open_popup();">Open in a separate window</a>
+
     <script>
       const from_id = (id) => document.getElementById(id);
       const h84statej = from_id("h84statej");
       const ti84faceplate = from_id("ti84faceplate");
+      const calc_div = from_id("calculatorDiv");
+      const popup_button = from_id("popup_button");
 
       //proxy the xmlhttprequest open to remove the hash from the url
       XMLHttpRequest.prototype.open = new Proxy(XMLHttpRequest.prototype.open, {
@@ -39,7 +53,19 @@
         return URL.createObjectURL(blob);
       }
 
-      async function main() {
+      function open_popup() {
+        let width = window.getComputedStyle(calc_div)["width"].replace("px", "");
+        let height = window.getComputedStyle(calc_div)["height"].replace("px", "");
+        let new_url = new URL(location.href);
+        new_url.hash = "popup";
+        window.open(new_url.href, null, `height=${height}, width=${width}`);
+      }
+
+      function main() {
+        if (location.hash === "#popup"){
+          popup_button.style.display = "none";
+        }
+
         let default_rom = h84statej.getAttribute("data-url");
         let default_faceplate = ti84faceplate.getAttribute("data-url");
 
