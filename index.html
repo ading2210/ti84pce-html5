@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
   <head>
     <title>TI-84 Plus CE Emulator</title>
     <meta name="description" content="This is a standalone version of the official TI-84 Plus CE HTML5 emulator from Texas Instruments.">
@@ -13,11 +13,26 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="icon" type="image/png" href="calc.png"/>
     <link rel="stylesheet" type="text/css" href="https://mn.testnav.com/client/public/stylesheets/tn.css"/>
+
     <style>
       body {
         padding: 0px !important;
         display: flex !important;
         flex-direction: column;
+      }
+      .calculatorDiv {
+        outline: none !important;
+        margin-left: auto;
+        margin-right: auto;
+      }
+      #main_div {
+        padding: 4px;
+        max-width: 300px;
+        margin-left: auto;
+        margin-right: auto;
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
       }
     </style>
 
@@ -28,19 +43,22 @@
   </head>
   <body>
     <div id="calculatorDiv"></div>
-    <a id="popup_button" href="javascript: open_popup();">Open in a separate window</a>
+    <div id="main_div">
+      <a id="popup_button" href="javascript: open_popup();">Open in a separate window</a>
+      <p style="font-size: 11px; line-height: normal">Copyright disclaimer: The files for the emulator itself are not hosted on this website. They are downloaded from <a href="https://mn.testnav.com/client/index.html#login?username=LGN265231722&password=L5E4J8P8" target="_blank">testnav.com</a>, where you can already use it for free.</p>
+    </div>
 
     <script>
       const from_id = (id) => document.getElementById(id);
       const h84statej = from_id("h84statej");
       const ti84faceplate = from_id("ti84faceplate");
       const calc_div = from_id("calculatorDiv");
-      const popup_button = from_id("popup_button");
+      const main_div = from_id("main_div");
 
       //proxy the xmlhttprequest open to remove the hash from the url
       XMLHttpRequest.prototype.open = new Proxy(XMLHttpRequest.prototype.open, {
         apply: function (target, thisArg, args) {
-          if (typeof args[1] === "string"){
+          if (typeof args[1] === "string") {
             args[1] = args[1].replace(/#.*$/, "");
           }
           Reflect.apply(target, thisArg, args);
@@ -62,8 +80,8 @@
       }
 
       function main() {
-        if (location.hash === "#popup"){
-          popup_button.style.display = "none";
+        if (location.hash === "#popup" || location.protocol == "file:"){
+          main_div.style.display = "none";
         }
 
         let default_rom = h84statej.getAttribute("data-url");
